@@ -8,15 +8,20 @@ defmodule RailwayTest do
 
   test "when ok, bind works" do
     require Railway
-    assert {:ok, 1} |> Railway.bind(&add_one/1) == 2
+
+    assert validate_positive(1) |> Railway.bind(&validate_positive/1) == {:ok, 1}
   end
 
   test "when fail, bind works" do
     require Railway
-    assert {:error, 1} == {:error, 1} |> Railway.bind(&add_one/1)
+    assert {:error, _} = validate_positive(-1) |> Railway.bind(&validate_positive/1)
   end
 
-  defp add_one(elem) do
-    elem + 1
+  defp validate_positive(data) do
+    if data > 0 do
+      {:ok, data}
+    else
+      {:error, "the input should be positive"}
+    end
   end
 end
